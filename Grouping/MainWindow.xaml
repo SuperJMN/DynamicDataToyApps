@@ -7,27 +7,42 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Window.DataContext>
-        <grouping:MainWindowViewModel />
+        <grouping:MainViewModel />
     </Window.DataContext>
-    <ListBox ItemsSource="{Binding GroupedByAge}">
-        <ListBox.ItemsPanel>
-            <ItemsPanelTemplate>
-                <WrapPanel></WrapPanel>
-            </ItemsPanelTemplate>
-        </ListBox.ItemsPanel>
-        <ListBox.ItemTemplate>
-            <DataTemplate DataType="{x:Type grouping:GroupedData}">
-                <GroupBox Header="{Binding Age}">
-                    <ListBox ItemsSource="{Binding People}" DisplayMemberPath="Name">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel></StackPanel>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
-                </GroupBox>
-            </DataTemplate>
-        </ListBox.ItemTemplate>
-    </ListBox>
+    <UniformGrid Rows="1">
+        <DataGrid ItemsSource="{Binding People}"/>
+        <ListBox ItemsSource="{Binding GroupedByAgeCollection}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type grouping:AgePersonPair}">
+                    <GroupBox>
+                        <GroupBox.Header>
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Age: {0} - Count: {1}">
+                                        <Binding Path="Age"/>
+                                        <Binding Path="PersonGroup.Count"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </GroupBox.Header>
+                        <ListBox ItemsSource="{Binding PersonGroup.People}" DisplayMemberPath="Name">
+                          
+                        </ListBox>
+                    </GroupBox>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </UniformGrid>
 </Window>
+
+
+
+
+
+
 
