@@ -1,4 +1,4 @@
-namespace WpfApplication1
+namespace Grouping
 {
     public class Person
     {

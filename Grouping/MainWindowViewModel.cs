@@ -1,4 +1,4 @@
-﻿namespace WpfApplication1
+﻿namespace Grouping
 {
     using System;
     using System.Collections.Generic;
