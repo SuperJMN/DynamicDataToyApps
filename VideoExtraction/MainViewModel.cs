@@ -16,7 +16,10 @@
         {
             var bitmapSource = new VideoBitmapProvider(@"Resources\\Sample.mp4", 0);
             var source = bitmapSource.Frames.ToObservable(new TaskPoolScheduler(new TaskFactory()));
-            var changeSet = source.ToObservableChangeSet();
+
+            var time = Observable.Interval(TimeSpan.FromMilliseconds(500));
+
+            var changeSet = source.Zip(time, (bmp, l) => bmp).ToObservableChangeSet();
 
             changeSet
                 .ObserveOnDispatcher()
