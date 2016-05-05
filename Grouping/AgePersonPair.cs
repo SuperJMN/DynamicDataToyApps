@@ -1,57 +1,34 @@
 ﻿namespace Grouping
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Reactive.Linq;
+    using System.Windows.Threading;
     using DynamicData;
     using DynamicData.Binding;
 
     public class AgePersonPair : AbstractNotifyPropertyChanged, IDisposable
     {
-        private readonly IGroup<Person, int, int> g;
-        private IEnumerable<Person> people;
+        private readonly ReadOnlyObservableCollection<Person> people;
         private readonly IDisposable cleanup;
-        private PersonGroupViewModel personGroup;
 
-        public AgePersonPair(IGroup<Person, int, int> group)
+        public AgePersonPair(IGroup<Person, int, int> group, Dispatcher dispatcher)
         {
             cleanup = group.Cache.Connect()
-                .QueryWhenChanged(
-                    query =>
-                    {
-                        var count = query.Count;
-                        var items = query.Items;
-                        return new PersonGroupViewModel(count, items);
-                    })
-                .Subscribe(model => PersonGroup = model);
+                .ObserveOn(dispatcher)
+                .Bind(out people)
+                .Subscribe();
 
             Age = group.Key;
         }
 
-        public PersonGroupViewModel PersonGroup
-        {
-            get { return personGroup; }
-            set { SetAndRaise(ref personGroup, value); }
-        }    
+        public ReadOnlyObservableCollection<Person> People => people;
 
         public int Age { get; set; }
-
-        public int PeopleCount { get; set; }
 
         public void Dispose()
         {
             cleanup.Dispose();
         }
-    }
-
-    public class PersonGroupViewModel
-    {
-        public int Count { get; set; }
-        public IEnumerable<Person> People { get; set; }
-
-        public PersonGroupViewModel(int count, IEnumerable<Person> people)
-        {
-            Count = count;
-            People = people;
-        }
-    }
+    }    
 }

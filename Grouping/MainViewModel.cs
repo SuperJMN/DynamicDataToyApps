@@ -3,6 +3,7 @@
     using System;
     using System.Collections.ObjectModel;
     using System.Reactive.Linq;
+    using System.Windows;
     using DynamicData;
 
     public class MainViewModel
@@ -12,17 +13,20 @@
 
         public MainViewModel()
         {
+            var dispatcher = Application.Current.Dispatcher;
+            
             var peopleObs = CreatePeopleObservable().Publish();
 
             var observableChangeSet = peopleObs.ToObservableChangeSet();
 
             var groupChangeSet = observableChangeSet
                 .Group(person => person.Age)
-                .Transform((group, i) => new AgePersonPair(group));
+                .Transform((group, i) => new AgePersonPair(group, dispatcher));
 
             groupChangeSet
                 .ObserveOnDispatcher()
                 .Bind(out groupedByAgeCollection)
+                .DisposeMany()
                 .Subscribe();
 
             var peopleChangeSet = observableChangeSet;
@@ -30,6 +34,7 @@
             peopleChangeSet
                 .ObserveOnDispatcher()
                 .Bind(out peopleCollection)
+
                 .Subscribe();
 
             peopleObs.Connect();

@@ -23,14 +23,13 @@
                         <GroupBox.Header>
                             <TextBlock>
                                 <TextBlock.Text>
-                                    <MultiBinding StringFormat="Age: {0} - Count: {1}">
+                                    <MultiBinding StringFormat="Age: {0}">
                                         <Binding Path="Age"/>
-                                        <Binding Path="PersonGroup.Count"/>
                                     </MultiBinding>
                                 </TextBlock.Text>
                             </TextBlock>
                         </GroupBox.Header>
-                        <ListBox ItemsSource="{Binding PersonGroup.People}" DisplayMemberPath="Name">
+                        <ListBox ItemsSource="{Binding People}" DisplayMemberPath="Name">
                           
                         </ListBox>
                     </GroupBox>
