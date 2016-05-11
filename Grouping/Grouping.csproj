@@ -35,8 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DynamicData, Version=4.6.0.1132, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DynamicData.4.6.0.1132\lib\net45\DynamicData.dll</HintPath>
+    <Reference Include="DynamicData, Version=4.7.1.1153, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DynamicData.4.7.1.1153\lib\net45\DynamicData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ReactiveUI, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">

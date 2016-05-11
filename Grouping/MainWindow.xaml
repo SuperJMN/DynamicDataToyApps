@@ -23,8 +23,9 @@
                         <GroupBox.Header>
                             <TextBlock>
                                 <TextBlock.Text>
-                                    <MultiBinding StringFormat="Age: {0}">
+                                    <MultiBinding StringFormat="Age: {0}: Count: {1}">
                                         <Binding Path="Age"/>
+                                        <Binding Path="Count"/>
                                     </MultiBinding>
                                 </TextBlock.Text>
                             </TextBlock>
@@ -38,6 +39,7 @@
         </ListBox>
     </UniformGrid>
 </Window>
+
 
 
 

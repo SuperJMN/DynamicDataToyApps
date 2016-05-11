@@ -15,13 +15,13 @@
         {
             var dispatcher = Application.Current.Dispatcher;
             
-            var peopleObs = CreatePeopleObservable().Publish();
+            var people = CreatePeopleObservable().Publish();
 
-            var observableChangeSet = peopleObs.ToObservableChangeSet();
+            var observableChangeSet = people.ToObservableChangeSet();
 
             var groupChangeSet = observableChangeSet
-                .Group(person => person.Age)
-                .Transform((group, i) => new AgePersonPair(group, dispatcher));
+                .GroupOn(person => person.Age)
+                .Transform(group => new AgePersonPair(group, dispatcher));
 
             groupChangeSet
                 .ObserveOnDispatcher()
@@ -37,7 +37,7 @@
 
                 .Subscribe();
 
-            peopleObs.Connect();
+            people.Connect();
         }
 
         public ReadOnlyObservableCollection<AgePersonPair> GroupedByAgeCollection => groupedByAgeCollection;
