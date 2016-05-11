@@ -1,43 +1,48 @@
-﻿namespace Grouping
+﻿using System.Reactive.Disposables;
+
+namespace Grouping
 {
     using System;
     using System.Collections.ObjectModel;
     using System.Reactive.Linq;
     using System.Windows;
     using DynamicData;
+    using DynamicData.Aggregation;
 
-    public class MainViewModel
+    public class MainViewModel: IDisposable
     {
         private readonly ReadOnlyObservableCollection<AgePersonPair> groupedByAgeCollection;
         private readonly ReadOnlyObservableCollection<Person> peopleCollection;
+        private readonly IDisposable cleanUp;
 
         public MainViewModel()
         {
             var dispatcher = Application.Current.Dispatcher;
+
+            var localList = CreatePeopleObservable()
+                        .ToObservableChangeSet()
+                        .AsObservableList();
+
+            //var count changed observable 
+            //var countChanged = localCache.CountChanged;
             
-            var people = CreatePeopleObservable().Publish();
+            //alternatively include 'DynamicData.Aggregation' namespace and use dd specific aggregations 
+            var countChanged = localList.Connect().Count();
 
-            var observableChangeSet = people.ToObservableChangeSet();
-
-            var groupChangeSet = observableChangeSet
+            var groupLoader = localList.Connect()
                 .GroupOn(person => person.Age)
-                .Transform(group => new AgePersonPair(group, dispatcher));
-
-            groupChangeSet
-                .ObserveOnDispatcher()
+                .Transform(group => new AgePersonPair(group, countChanged, dispatcher))
+                .ObserveOn(dispatcher)
                 .Bind(out groupedByAgeCollection)
                 .DisposeMany()
                 .Subscribe();
 
-            var peopleChangeSet = observableChangeSet;
-
-            peopleChangeSet
-                .ObserveOnDispatcher()
+            var peopleLoader = localList.Connect()
+                .ObserveOn(dispatcher)
                 .Bind(out peopleCollection)
-
                 .Subscribe();
 
-            people.Connect();
+            cleanUp = new CompositeDisposable(peopleLoader, groupLoader, groupLoader);
         }
 
         public ReadOnlyObservableCollection<AgePersonPair> GroupedByAgeCollection => groupedByAgeCollection;
@@ -65,6 +70,11 @@
             var peopleObs = people.ToObservable();
             var intervalPeopleObs = intervalObs.Zip(peopleObs, (_, person) => person);
             return intervalPeopleObs;
+        }
+
+        public void Dispose()
+        {
+            cleanUp.Dispose();
         }
     }
 }

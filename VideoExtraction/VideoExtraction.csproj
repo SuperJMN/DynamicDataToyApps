@@ -93,8 +93,8 @@
       <HintPath>..\packages\DotImaging.Primitives2D.4.8.0\lib\net45\DotImaging.Primitives2D.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DynamicData, Version=4.6.0.1132, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DynamicData.4.6.0.1132\lib\net45\DynamicData.dll</HintPath>
+    <Reference Include="DynamicData, Version=4.7.1.1153, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DynamicData.4.7.1.1153\lib\net45\DynamicData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MessagingToolkit.Barcode, Version=1.7.0.1, Culture=neutral, PublicKeyToken=4d44dd7196d3c1ac, processorArchitecture=x86">
