@@ -24,13 +24,13 @@
             OpenFileCommand = ReactiveCommand.Create();
             OpenFileCommand.Subscribe(_ => OpenFromFile());
 
-            observableLines = workUnits                
+            observableLines = workUnits   
                 .Switch()
                 .Publish();
             
             observableLines
                 .ToObservableChangeSet()
-                .ObserveOnDispatcher()
+                .ObserveOnDispatcher()                
                 .Bind(out lines)
                 .Subscribe();
         }
@@ -45,14 +45,21 @@
                 var path = openFileService.FileName;
                 observableLines.Connect();
 
-                var linesFromFile = ToLines(new StreamReader(path, Encoding.Default));
-
-                var observableLinesFromFile = linesFromFile
-                    .ToObservable()
-                    .PushEvery(TimeSpan.FromSeconds(1));
-
-                workUnits.OnNext(observableLinesFromFile);
+                var observableLinesFromReader = Observable.Using(() => new StreamReader(path, Encoding.Default), CreateObservableFromReader);
+                    
+                workUnits.OnNext(observableLinesFromReader);
             }
+        }
+
+        private static IObservable<string> CreateObservableFromReader(StreamReader reader)
+        {
+            var linesFromFile = ToLines(reader);
+
+            var observableLinesFromFile = linesFromFile
+                .ToObservable()
+                .PushEvery(TimeSpan.FromSeconds(1));
+
+            return observableLinesFromFile;
         }
 
         private static IEnumerable<string> ToLines(StreamReader streamReader)
