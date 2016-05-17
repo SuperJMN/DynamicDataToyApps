@@ -8,14 +8,13 @@ namespace Grouping
     using System.Windows.Threading;
     using DynamicData;
     using DynamicData.Binding;
-    using ReactiveUI;
 
     public class AgePersonPair : AbstractNotifyPropertyChanged, IDisposable
     {
         private readonly IDisposable cleanup;
         private readonly ReadOnlyObservableCollection<Person> people;
         private  int count;
-        private decimal _percent;
+        private double percent;
 
         public AgePersonPair(IGroup<Person, int> group, IObservable<int> totalCountChanged, Dispatcher dispatcher)
         {
@@ -28,10 +27,9 @@ namespace Grouping
 
             var countChangedShared = group.List.CountChanged.Publish();
 
-            var percentChaged = totalCountChanged.CombineLatest(countChangedShared, (overallCount, groupCount) =>
-            {
-                return overallCount == 0 ?  0 : Math.Round(groupCount / (decimal)overallCount,2);
-            }).Subscribe(pc => Percent = pc);
+            var percentChaged = totalCountChanged
+                .CombineLatest(countChangedShared, (overallCount, groupCount) => overallCount == 0 ?  0 : groupCount / (double)overallCount)
+                .Subscribe(pc => Percent = pc);
 
             var countChanged = countChangedShared.Subscribe(num => Count = num);
 
@@ -46,10 +44,10 @@ namespace Grouping
             set { SetAndRaise(ref count, value); }
         }
 
-        public decimal Percent
+        public double Percent
         {
-            get { return _percent; }
-            set { SetAndRaise(ref _percent, value);  }
+            get { return percent; }
+            set { SetAndRaise(ref percent, value);  }
         }
 
         public ReadOnlyObservableCollection<Person> People => people;
