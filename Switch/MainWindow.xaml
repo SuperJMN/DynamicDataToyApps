@@ -16,6 +16,6 @@
                 <MenuItem Header="Open…" Command="{Binding OpenFileCommand}"/>
             </MenuItem>
         </Menu>
-        <ListView Grid.Row="1" ItemsSource="{Binding Lines}"/>
+        <ListView Grid.Row="1" ItemsSource="{Binding File.Lines}"/>
     </Grid>
 </Window>
