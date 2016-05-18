@@ -1,4 +1,4 @@
-﻿namespace ReactiveLocura
+﻿namespace TextFileLoader
 {
     using System;
     using System.Collections.Generic;
@@ -14,9 +14,9 @@
     public class MainViewModel : ReactiveObject
     {
         private readonly IOpenFileService openFileService;
-        
-        private readonly ISubject<IObservable<FileViewModel>> files = new Subject<IObservable<FileViewModel>>();
-        private readonly ObservableAsPropertyHelper<FileViewModel> file;
+
+        private readonly ISubject<IObservable<string>> lines = new Subject<IObservable<string>>();
+        private readonly ReadOnlyObservableCollection<string> linesCollection;
 
 
         public MainViewModel(IOpenFileService openFileService)
@@ -25,16 +25,17 @@
             OpenFileCommand = ReactiveCommand.Create();
             OpenFileCommand.Subscribe(_ => OpenFromFile());
 
-            var fileObs = files
-                .Switch()
-                .Publish();
-            
-            fileObs.ToProperty(this, model => model.File, out file);
+            var fileObs = lines
+                .Switch();
 
-            fileObs.Connect();
+            fileObs
+                .ToObservableChangeSet()
+                .ObserveOnDispatcher()
+                .Bind(out linesCollection)
+                .Subscribe();
         }
 
-        public FileViewModel File => file.Value;
+        public IEnumerable<string> LinesCollection => linesCollection;
 
         private void OpenFromFile()
         {
@@ -42,11 +43,32 @@
             if (dialogResult == true)
             {
                 var path = openFileService.FileName;
-                var observable = Observable.Using(() => new StreamReader(path, Encoding.Default), Observable.Return);
-                files.OnNext(observable);
+
+                var observable = Observable.Using(() => new StreamReader(path, Encoding.Default), CreateObservableLines);
+
+                lines.OnNext(observable);
             }
         }
-       
-        public ReactiveCommand<object> OpenFileCommand { get; }        
+
+        private static IObservable<string> CreateObservableLines(StreamReader reader)
+        {
+            var linesFromFile = ToLines(reader);
+
+            var observableLinesFromFile = linesFromFile
+                .ToObservable()
+                .PushEvery(TimeSpan.FromSeconds(1));
+
+            return observableLinesFromFile;
+        }
+
+        private static IEnumerable<string> ToLines(StreamReader streamReader)
+        {
+            while (!streamReader.EndOfStream)
+            {
+                yield return streamReader.ReadLine();
+            }
+        }
+
+        public ReactiveCommand<object> OpenFileCommand { get; }
     }
 }

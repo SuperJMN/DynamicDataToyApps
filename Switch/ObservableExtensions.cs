@@ -1,4 +1,4 @@
-﻿namespace ReactiveLocura
+﻿namespace TextFileLoader
 {
     using System;
     using System.Reactive.Linq;
