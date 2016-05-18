@@ -56,7 +56,7 @@
 
             var observableLinesFromFile = linesFromFile
                 .ToObservable()
-                .PushEvery(TimeSpan.FromSeconds(1));
+                .PushEvery(TimeSpan.FromSeconds(2));
 
             return observableLinesFromFile;
         }
