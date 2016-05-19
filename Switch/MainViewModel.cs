@@ -1,4 +1,6 @@
-﻿namespace TextFileLoader
+﻿using System.Reactive.Disposables;
+
+namespace TextFileLoader
 {
     using System;
     using System.Collections.Generic;
@@ -11,11 +13,11 @@
     using DynamicData;
     using ReactiveUI;
 
-    public class MainViewModel : ReactiveObject
+    public class MainViewModel : ReactiveObject, IDisposable
     {
+        private readonly IDisposable cleanUp;
         private readonly IOpenFileService openFileService;
-
-        private readonly ISubject<IObservable<string>> lines = new Subject<IObservable<string>>();
+        private readonly ISubject<string> files = new Subject<string>();
         private readonly ReadOnlyObservableCollection<string> linesCollection;
 
 
@@ -25,14 +27,43 @@
             OpenFileCommand = ReactiveCommand.Create();
             OpenFileCommand.Subscribe(_ => OpenFromFile());
 
-            var fileObs = lines
-                .Switch();
+            var locker = new object();
 
-            fileObs
-                .ToObservableChangeSet()
+            var list = new SourceList<string>();
+
+            var listLoader = list.Connect()
                 .ObserveOnDispatcher()
                 .Bind(out linesCollection)
                 .Subscribe();
+
+            var linesWriter = files
+                .Select(path =>
+                {
+                    //There are other ways of doing this but this is one of them
+                    return Observable.Create<string>(observer =>
+                    {
+                        var publisher = Observable.Using(() => new StreamReader(path, Encoding.Default),
+                            CreateObservableLines)
+                             .Synchronize(locker)
+                            .SubscribeSafe(observer);
+
+                        return Disposable.Create(() =>
+                        {
+                            lock (locker)
+                            {
+                                list.Clear();
+                            }
+                            publisher.Dispose();
+                        });
+                    });
+                })
+                .Switch()
+                .Subscribe(line =>
+                {
+                    list.Add(line);
+                });
+
+            cleanUp = new CompositeDisposable(listLoader, linesWriter, list);
         }
 
         public IEnumerable<string> LinesCollection => linesCollection;
@@ -43,10 +74,7 @@
             if (dialogResult == true)
             {
                 var path = openFileService.FileName;
-
-                var observable = Observable.Using(() => new StreamReader(path, Encoding.Default), CreateObservableLines);
-
-                lines.OnNext(observable);
+                files.OnNext(path);
             }
         }
 
@@ -70,5 +98,9 @@
         }
 
         public ReactiveCommand<object> OpenFileCommand { get; }
+        public void Dispose()
+        {
+            cleanUp.Dispose();
+        }
     }
 }
