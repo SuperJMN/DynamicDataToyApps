@@ -1,4 +1,6 @@
-﻿namespace TextFileLoader
+﻿using System.Reactive.Disposables;
+
+namespace TextFileLoader
 {
     using System;
     using System.Collections.Generic;
@@ -11,28 +13,36 @@
     using DynamicData;
     using ReactiveUI;
 
-    public class MainViewModel : ReactiveObject
+    public class MainViewModel : ReactiveObject, IDisposable
     {
+        private readonly IDisposable cleanUp;
         private readonly IOpenFileService openFileService;
-
-        private readonly ISubject<IObservable<string>> lines = new Subject<IObservable<string>>();
+        private readonly ISubject<string> files = new Subject<string>();
         private readonly ReadOnlyObservableCollection<string> linesCollection;
-
-
+        
         public MainViewModel(IOpenFileService openFileService)
         {
             this.openFileService = openFileService;
             OpenFileCommand = ReactiveCommand.Create();
             OpenFileCommand.Subscribe(_ => OpenFromFile());
 
-            var fileObs = lines
-                .Switch();
 
-            fileObs
-                .ToObservableChangeSet()
+            var list = new SourceList<string>();
+            var listLoader = list.Connect()
                 .ObserveOnDispatcher()
                 .Bind(out linesCollection)
                 .Subscribe();
+
+            var linesWriter = files
+                .Select(path =>
+                {
+                    return Observable.Using(() => new StreamReader(path, Encoding.Default), CreateObservableLines)
+                        .Finally(() => list.Clear());
+                })
+                .Switch()
+                .Subscribe(line => list.Add(line));
+
+            cleanUp = new CompositeDisposable(listLoader, linesWriter, list);
         }
 
         public IEnumerable<string> LinesCollection => linesCollection;
@@ -43,10 +53,7 @@
             if (dialogResult == true)
             {
                 var path = openFileService.FileName;
-
-                var observable = Observable.Using(() => new StreamReader(path, Encoding.Default), CreateObservableLines);
-
-                lines.OnNext(observable);
+                files.OnNext(path);
             }
         }
 
@@ -70,5 +77,9 @@
         }
 
         public ReactiveCommand<object> OpenFileCommand { get; }
+        public void Dispose()
+        {
+            cleanUp.Dispose();
+        }
     }
 }
