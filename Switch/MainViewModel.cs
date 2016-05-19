@@ -39,22 +39,11 @@ namespace TextFileLoader
             var linesWriter = files
                 .Select(path =>
                 {
-                    //There are other ways of doing this but this is one of them
-                    return Observable.Create<string>(observer =>
+                    return Observable.Defer(() =>
                     {
-                        var publisher = Observable.Using(() => new StreamReader(path, Encoding.Default),
-                            CreateObservableLines)
-                             .Synchronize(locker)
-                            .SubscribeSafe(observer);
-
-                        return Disposable.Create(() =>
-                        {
-                            lock (locker)
-                            {
-                                list.Clear();
-                            }
-                            publisher.Dispose();
-                        });
+                        return Observable.Using(() => new StreamReader(path, Encoding.Default),CreateObservableLines)
+                            .Synchronize(locker)
+                            .Finally(() => list.Clear());
                     });
                 })
                 .Switch()
