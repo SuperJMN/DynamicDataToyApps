@@ -19,8 +19,7 @@ namespace TextFileLoader
         private readonly IOpenFileService openFileService;
         private readonly ISubject<string> files = new Subject<string>();
         private readonly ReadOnlyObservableCollection<string> linesCollection;
-
-
+        
         public MainViewModel(IOpenFileService openFileService)
         {
             this.openFileService = openFileService;
@@ -43,10 +42,7 @@ namespace TextFileLoader
                         .Finally(() => list.Clear());
                 })
                 .Switch()
-                .Subscribe(line =>
-                {
-                    list.Add(line);
-                });
+                .Subscribe(line => list.Add(line));
 
             cleanUp = new CompositeDisposable(listLoader, linesWriter, list);
         }
