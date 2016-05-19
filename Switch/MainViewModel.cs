@@ -26,10 +26,8 @@ namespace TextFileLoader
             OpenFileCommand = ReactiveCommand.Create();
             OpenFileCommand.Subscribe(_ => OpenFromFile());
 
-            var locker = new object();
 
             var list = new SourceList<string>();
-
             var listLoader = list.Connect()
                 .ObserveOnDispatcher()
                 .Bind(out linesCollection)
