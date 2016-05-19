@@ -23,7 +23,7 @@
                         <GroupBox.Header>
                             <TextBlock>
                                 <TextBlock.Text>
-                                    <MultiBinding StringFormat="Age: {0}: Count: {1}. % of total: {2}">
+                                    <MultiBinding StringFormat="Age: {0}: Count: {1}. % of total: {2:P}">
                                         <Binding Path="Age"/>
                                         <Binding Path="Count"/>
                                         <Binding Path="Percent"/>

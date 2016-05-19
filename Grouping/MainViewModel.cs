@@ -9,7 +9,7 @@ namespace Grouping
     using DynamicData;
     using DynamicData.Aggregation;
 
-    public class MainViewModel: IDisposable
+    public class MainViewModel : IDisposable
     {
         private readonly ReadOnlyObservableCollection<AgePersonPair> groupedByAgeCollection;
         private readonly ReadOnlyObservableCollection<Person> peopleCollection;
@@ -25,7 +25,7 @@ namespace Grouping
 
             //var count changed observable 
             //var countChanged = localCache.CountChanged;
-            
+
             //alternatively include 'DynamicData.Aggregation' namespace and use dd specific aggregations 
             var countChanged = localList.Connect().Count();
 
@@ -63,7 +63,14 @@ namespace Grouping
                 new Person("Anthony", 3),
                 new Person("David", 2),
                 new Person("Joanna", 5),
-                new Person("Oscar", 4)
+                new Person("Oscar", 4),
+                new Person("Tom", 5),
+                new Person("Rachel", 3),
+                new Person("Robert", 3),
+                new Person("Diana", 2),
+                new Person("Emily", 1),
+                new Person("William", 3),
+                new Person("Sarah", 6),
             };
 
             var intervalObs = Observable.Interval(TimeSpan.FromSeconds(2));

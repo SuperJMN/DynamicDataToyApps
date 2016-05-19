@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grouping", "Grouping\Groupi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoExtraction", "VideoExtraction\VideoExtraction.csproj", "{67FF2D08-8726-4F82-998F-6034D3D472F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextFileLoader", "Switch\TextFileLoader.csproj", "{3712F207-CA6D-42B7-8FA9-25AAC3D39DFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{67FF2D08-8726-4F82-998F-6034D3D472F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67FF2D08-8726-4F82-998F-6034D3D472F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67FF2D08-8726-4F82-998F-6034D3D472F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3712F207-CA6D-42B7-8FA9-25AAC3D39DFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3712F207-CA6D-42B7-8FA9-25AAC3D39DFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3712F207-CA6D-42B7-8FA9-25AAC3D39DFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3712F207-CA6D-42B7-8FA9-25AAC3D39DFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
