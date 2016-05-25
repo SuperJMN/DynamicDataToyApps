@@ -1,6 +1,6 @@
 ﻿namespace WpfApplication7
 {
-    public interface IVisibility
+    public interface IVisibilityAware
     {
         bool IsVisible { get; set; }
     }

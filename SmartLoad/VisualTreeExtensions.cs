@@ -3,12 +3,12 @@
     using System;
     using System.Windows.Media;
 
-    public static class Extensions
+    public static class VisualTreeExtensions
     {
         public static T GetVisualChild<T>(this Visual referenceVisual) where T : Visual
         {
             Visual child = null;
-            for (Int32 i = 0; i < VisualTreeHelper.GetChildrenCount(referenceVisual); i++)
+            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(referenceVisual); i++)
             {
                 child = VisualTreeHelper.GetChild(referenceVisual, i) as Visual;
                 if (child != null && child is T)

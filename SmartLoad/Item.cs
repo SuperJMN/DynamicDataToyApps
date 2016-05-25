@@ -4,7 +4,7 @@ namespace WpfApplication7
     using System.Windows.Media.Imaging;
     using ReactiveUI;
 
-    public class Item : ReactiveObject, IVisibility
+    public class Item : ReactiveObject, IVisibilityAware
     {
         private string title;
         private bool isVisible;

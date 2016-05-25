@@ -86,12 +86,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Item.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="IVisibility.cs" />
+    <Compile Include="IVisibilityAware.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="SmartLoadBehavior.cs" />
+    <Compile Include="VisualTreeExtensions.cs" />
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

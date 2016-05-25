@@ -12,7 +12,7 @@ namespace WpfApplication7
 
     public class SmartLoadBehavior : Behavior<ItemsControl>
     {
-        private IEnumerable<IVisibility> oldItems = new List<IVisibility>();
+        private IEnumerable<IVisibilityAware> oldItems = new List<IVisibilityAware>();
         private ScrollViewer scrollViewer;
         private IDisposable loaded;
         private IDisposable updater;
@@ -38,7 +38,7 @@ namespace WpfApplication7
         {
             loaded.Dispose();
 
-            scrollViewer = AssociatedObject.GetVisualChild<ScrollViewer>();
+            scrollViewer = VisualTreeExtensions.GetVisualChild<ScrollViewer>(AssociatedObject);
             var scrollBar = scrollViewer.Template.FindName("PART_VerticalScrollBar", scrollViewer) as ScrollBar;
 
             var valueChanged = Observable.FromEventPattern<RoutedPropertyChangedEventHandler<double>, RoutedEventArgs>(
@@ -76,7 +76,7 @@ namespace WpfApplication7
             oldItems = newItems;
         }
 
-        private void SetVisibilityValues(IEnumerable<IVisibility> oldItems, IEnumerable<IVisibility> visible)
+        private void SetVisibilityValues(IEnumerable<IVisibilityAware> oldItems, IEnumerable<IVisibilityAware> visible)
         {
             var noLonger = oldItems.Except(visible);
             var newer = visible.Except(oldItems);
@@ -92,13 +92,13 @@ namespace WpfApplication7
             }
         }
 
-        private IEnumerable<IVisibility> GetItems(int index, int count)
+        private IEnumerable<IVisibilityAware> GetItems(int index, int count)
         {
             for (var i = index; i < index + count; i++)
             {
                 var container = AssociatedObject.ItemContainerGenerator.ContainerFromIndex(i);
                 var item = AssociatedObject.ItemContainerGenerator.ItemFromContainer(container);
-                yield return (IVisibility)item;
+                yield return (IVisibilityAware)item;
             }
         }
     }
